@@ -1,0 +1,20 @@
+require 'rbconfig'
+
+RELEASE_FOLDER = "./"
+
+desc 'run all the specs'
+task spec: %w(spec:test)
+
+namespace :spec do
+  require 'rspec/core/rake_task'
+
+  desc 'runs integration test'
+  RSpec::Core::RakeTask.new(:test) do |t|
+    t.pattern = FileList['spec/integration/**/*_spec.rb']
+  end
+
+end
+
+
+
+task default: :spec

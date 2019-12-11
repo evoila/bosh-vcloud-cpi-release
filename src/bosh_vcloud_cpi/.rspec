@@ -1,3 +1,4 @@
 --color
 --require ./spec/support/profiling_formatter.rb
+--require spec_helper
 --format progress
