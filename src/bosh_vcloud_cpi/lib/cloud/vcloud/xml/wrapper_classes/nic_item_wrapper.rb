@@ -8,7 +8,7 @@ module VCloudSdk
         # Ensure the underlying XML has all the necessary RASD elements.
         # This is useful for NIC creation.
         # Should have no effect when receiving XML from VCD.
-        [:ADDRESS_ON_PARENT, :CONNECTION, :INSTANCE_ID].each { |t|
+        [:ADDRESS_ON_PARENT, :CONNECTION, :DESCRIPTION, :ELEMENT_NAME, :INSTANCE_ID].each { |t|
           rt = RASD_TYPES[t]
           add_rasd(rt) unless get_rasd(rt) }
 
@@ -41,6 +41,15 @@ module VCloudSdk
 
       def nic_index=(value)
         set_rasd(RASD_TYPES[:ADDRESS_ON_PARENT], value)
+        set_rasd(RASD_TYPES[:INSTANCE_ID], 10000 + value)
+      end
+
+      def description=(value)
+        set_rasd(RASD_TYPES[:DESCRIPTION], value)
+      end
+
+      def element_name=(value)
+        set_rasd(RASD_TYPES[:ELEMENT_NAME], value)
       end
 
       def ip_addressing_mode

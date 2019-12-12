@@ -115,7 +115,6 @@ module VCloudSdk
       end
 
       # hardware modification methods
-
       def add_hard_disk(size_mb)
         section = hardware_section
         scsi_controller = section.scsi_controller
@@ -127,16 +126,22 @@ module VCloudSdk
           hardware_section.doc_namespaces)
         section.add_item(new_disk)
         # The order matters!
+        previous_disks_list = Array.new(hardware_section.hard_disks)
+        index = previous_disks_list.length 
+
+        address_on_parent = RASD_TYPES[:ADDRESS_ON_PARENT]
+        new_disk.add_rasd(address_on_parent)
+        new_disk.set_rasd(address_on_parent, index)
+
+        description = RASD_TYPES[:DESCRIPTION]
+        new_disk.add_rasd(description)
+        new_disk.set_rasd(description, "Hard Disk")
+
+        element_name = RASD_TYPES[:ELEMENT_NAME]
+        new_disk.add_rasd(element_name)
+        new_disk.set_rasd(element_name, "Hard Disk #{index}")
+
         new_disk.add_rasd(RASD_TYPES[:HOST_RESOURCE])
-
-        instance_id_type = RASD_TYPES[:INSTANCE_ID]
-        new_disk.add_rasd(instance_id_type)
-        new_disk.set_rasd(instance_id_type, section.highest_instance_id + 1)
-
-        rt = RASD_TYPES[:RESOURCE_TYPE]
-        new_disk.add_rasd(rt)
-        new_disk.set_rasd(rt, HARDWARE_TYPE[:HARD_DISK])
-
         host_resource = new_disk.get_rasd(RASD_TYPES[:HOST_RESOURCE])
         host_resource[new_disk.create_qualified_name(
           "capacity", VCLOUD_NAMESPACE)] = size_mb.to_s
@@ -145,6 +150,18 @@ module VCloudSdk
             RASD_TYPES[:RESOURCE_SUB_TYPE])
         host_resource[new_disk.create_qualified_name(
           "busType", VCLOUD_NAMESPACE)] = HARDWARE_TYPE[:SCSI_CONTROLLER]
+
+        instance_id_type = RASD_TYPES[:INSTANCE_ID]
+        new_disk.add_rasd(instance_id_type)
+        new_disk.set_rasd(instance_id_type, section.highest_instance_id + 1)
+        
+        pt = RASD_TYPES[:PARENT]
+        new_disk.add_rasd(pt)
+        new_disk.set_rasd(pt, scsi_controller.get_rasd_content(RASD_TYPES[:INSTANCE_ID]))
+
+        rt = RASD_TYPES[:RESOURCE_TYPE]
+        new_disk.add_rasd(rt)
+        new_disk.set_rasd(rt, HARDWARE_TYPE[:HARD_DISK])
       end
 
       def find_attached_disk(disk)
@@ -176,6 +193,8 @@ module VCloudSdk
         new_nic.network = network_name
         new_nic.set_ip_addressing_mode(addressing_mode, ip)
         new_nic.is_primary = is_primary
+        new_nic.description = "NIC"
+        new_nic.element_name = "NIC #{nic_index}"
       end
 
       # NIC modification methods

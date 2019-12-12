@@ -83,7 +83,6 @@ module VCloudCloud
         storage_profiles = client.vdc.storage_profiles || []
         storage_profile = storage_profiles.find { |sp| sp['name'] == @entities['vapp_storage_profile'] }
 
-
         s.next Steps::Instantiate, catalog_vapp_id, vapp_name, description, disk_locality, storage_profile
         client.flush_cache # flush cached vdc which contains vapp list
         vapp = s.state[:vapp]

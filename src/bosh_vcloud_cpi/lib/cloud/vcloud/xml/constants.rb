@@ -24,7 +24,9 @@ module VCloudSdk
         :ADDRESS_ON_PARENT => "AddressOnParent",
         :ADDRESS => "Address",
         :CONNECTION => "Connection",
-        :PARENT => "Parent"
+        :PARENT => "Parent",
+        :DESCRIPTION => "Description",
+        :ELEMENT_NAME => "ElementName"
     }
 
     RESOURCE_SUB_TYPE = {

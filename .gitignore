@@ -20,3 +20,4 @@ blobs
 #*
 /_*
 tmp/
+env.sh

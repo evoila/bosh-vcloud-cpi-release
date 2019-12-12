@@ -31,7 +31,8 @@ describe VCloudCloud::Steps::AddCatalog do
   end
 
   before(:all) do
-    @logger = Logger.new ENV['LOGGER']
+    @logger = Logger.new(STDOUT)
+    @logger.level = Logger::DEBUG
     @logger.formatter = ThreadFormatter.new
 
     @client = VCloudCloud::VCloudClient.new(
