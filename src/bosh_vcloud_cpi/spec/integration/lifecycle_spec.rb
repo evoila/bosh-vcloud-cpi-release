@@ -17,7 +17,7 @@ describe VCloudCloud::Cloud do
     @metadata_key  = ENV['BOSH_VCLOUD_CPI_VM_METADATA_KEY']     || raise("Missing BOSH_VCLOUD_CPI_VM_METADATA_KEY")
     @target_ip1     = ENV['BOSH_VCLOUD_CPI_IP']     || raise("Missing BOSH_VCLOUD_CPI_IP")
     @target_ip2     = ENV['BOSH_VCLOUD_CPI_IP2']     || raise("Missing BOSH_VCLOUD_CPI_IP2")
-    @target_ips     = [@target_ip1] #@target_ip2
+    @target_ips     = [@target_ip1, @target_ip2] #
     @netmask       = ENV['BOSH_VCLOUD_CPI_NETMASK'] || raise("Missing BOSH_VCLOUD_CPI_NETMASK")
     @dns           = ENV['BOSH_VCLOUD_CPI_DNS']         || raise("Missing BOSH_VCLOUD_CPI_DNS")
     @gateway       = ENV['BOSH_VCLOUD_CPI_GATEWAY']     || raise("Missing BOSH_VCLOUD_CPI_GATEWAY")
@@ -132,11 +132,14 @@ describe VCloudCloud::Cloud do
     disk_id = cpi.create_disk(2048, {}, vm_id)
     expect(disk_id).to_not be_nil
     @disk_ids << disk_id
-    DOC
-    if disk_locality
-      cpi.attach_disk(vm_id, disk_locality)
-      cpi.detach_disk(vm_id, disk_locality)    
+    
+    disk_locality.each do |d|
+      cpi.attach_disk(vm_id, d)
+      sleep(60)
+      cpi.detach_disk(vm_id, d)
+      sleep(60) 
     end
+    DOC
   end
 
   def vm_lifecycle_sequential(resource_pool, disk_locality)
@@ -154,6 +157,7 @@ describe VCloudCloud::Cloud do
   end
 
   describe 'vcloud' do
+  
     context 'with existing disks' do
       before { @existing_volume_id = @cpi.create_disk(1024, {}) }
       after { @cpi.delete_disk(@existing_volume_id) if @existing_volume_id }
@@ -163,8 +167,6 @@ describe VCloudCloud::Cloud do
       end
     end
 
-
-    <<-DOC
     context 'without existing disks' do
       it 'should exercise the vm lifecycle sequentially' do
         vm_lifecycle_sequential(resource_pool, [])
@@ -174,6 +176,6 @@ describe VCloudCloud::Cloud do
         vm_lifecycle_concurrent(resource_pool, [])
       end
     end
-    DOC
+
   end
 end

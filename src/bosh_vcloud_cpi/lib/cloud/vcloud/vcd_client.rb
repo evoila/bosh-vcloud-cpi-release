@@ -16,9 +16,9 @@ module VCloudCloud
 
     def initialize(vcd_settings, logger)
       @logger = logger
-      @logger = Logger.new(STDOUT)
-      @logger.level = Logger::DEBUG
-      @logger.formatter = ThreadFormatter.new
+      #@logger = Logger.new(STDOUT)
+      #@logger.level = Logger::DEBUG
+      #@logger.formatter = ThreadFormatter.new
       @url  = vcd_settings['url']
       @user = vcd_settings['user']
       @pass = vcd_settings['password']
